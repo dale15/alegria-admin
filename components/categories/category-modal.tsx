@@ -1,57 +1,67 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-
-type Category = {
-  id?: string
-  name: string
-  description?: string
-}
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Category, CategoryService } from "@/services/category_service";
 
 interface Props {
-  open: boolean
-  category: Category | null
-  onClose: () => void
+  open: boolean;
+  category: Category | null;
+  onClose: () => void;
+  onSaved: () => void;
 }
 
-export default function CategoryModal({
-  open,
-  category,
-  onClose,
-}: Props) {
-  const [name, setName] = useState(category?.name ?? "")
-  const [description, setDescription] = useState(category?.description ?? "")
+export default function CategoryModal({ open, category, onClose, onSaved }: Props) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (category) {
-      setName(category.name)
-      setDescription(category.description || "")
+      setName(category.name);
+      setDescription(category.description || "");
     } else {
-      setName("")
-      setDescription("")
+      setName("");
+      setDescription("");
     }
-  }, [category])
+  }, [category]);
 
-  const handleSubmit = () => {
-    // TODO: connect API
-    console.log({
-      name,
-      description,
-    })
+  const handleSubmit = async () => {
+    if (!name.trim()) return;
 
-    onClose()
-  }
+    try {
+      setSaving(true);
+
+      if (category) {
+        // ✏️ Edit
+        await CategoryService.update(category.id, {
+          name,
+          description,
+        });
+      } else {
+        // ➕ Create
+        await CategoryService.create({
+          name,
+          description,
+        });
+      }
+
+      onSaved();
+      onClose();
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -85,14 +95,14 @@ export default function CategoryModal({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>
-            Save
+          <Button onClick={handleSubmit} disabled={saving || !name.trim()}>
+            {saving ? "Saving..." : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

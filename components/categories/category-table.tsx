@@ -19,39 +19,30 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import CategoryModal from "./category-modal";
 import ConfirmDialog from "@/components/common/confirm-dialog";
+import { Category, CategoryService } from "@/services/category_service";
 
-type Category = {
-  id: string;
-  name: string;
-  description?: string;
-};
+interface Props {
+  categories: Category[];
+  loading: boolean;
+  onRefresh: () => void;
+}
 
-const mockCategories: Category[] = [
-  {
-    id: "1",
-    name: "Beverages",
-    description: "Drinks and refreshments",
-  },
-  {
-    id: "2",
-    name: "Snacks",
-    description: "Quick bites and snacks",
-  },
-];
-
-export default function CategoryTable() {
-  const [categories, setCategories] = useState(mockCategories);
+export default function CategoryTable({
+  categories,
+  loading,
+  onRefresh,
+}: Props) {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
   const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deleteCategory) return;
 
-    setCategories((prev) => prev.filter((c) => c.id !== deleteCategory.id));
-
+    await CategoryService.remove(deleteCategory.id);
     setDeleteCategory(null);
+    onRefresh(); // ✅ refresh from parent
   };
 
   return (
@@ -62,12 +53,23 @@ export default function CategoryTable() {
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead className="w-[80px]" />
+              <TableHead className="w-[20]" />
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {categories.length === 0 && (
+            {loading && (
+              <TableRow>
+                <TableCell
+                  colSpan={3}
+                  className="text-center text-muted-foreground"
+                >
+                  Loading categories...
+                </TableCell>
+              </TableRow>
+            )}
+
+            {!loading && categories.length === 0 && (
               <TableRow>
                 <TableCell
                   colSpan={3}
@@ -116,6 +118,7 @@ export default function CategoryTable() {
         open={!!selectedCategory}
         category={selectedCategory}
         onClose={() => setSelectedCategory(null)}
+        onSaved={onRefresh}
       />
 
       {/* Delete Confirmation */}
