@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import {
   DropdownMenu,
@@ -16,65 +15,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Product } from "@/services/product_service";
 
-type ProductModifierOption = {
-  id: string;
-  name: string;
-  priceAdjustment: number; // + or -
-};
-
-type ProductModifierGroup = {
-  id: string;
-  name: string; // e.g. "Size", "Add-ons"
-  required: boolean;
-  multiple: boolean; // true = checkbox, false = radio
-  options: ProductModifierOption[];
-};
-
-type Product = {
-  id: string;
-  name: string;
-  category: string;
-  sku: string;
-  costPrice: number;
-  sellingPrice: number;
-  modifiers?: ProductModifierGroup[]; // 👈 drinks only
-};
-
-const products: Product[] = [
-  {
-    id: "1",
-    name: "iPhone 15 Pro",
-    category: "Electronics",
-    sku: "IPH15-PRO-256",
-    costPrice: 65000,
-    sellingPrice: 79999,
-  },
-  {
-    id: "2",
-    name: "MacBook Air M2",
-    category: "Computers",
-    sku: "MBA-M2-512",
-    costPrice: 60000,
-    sellingPrice: 69999,
-  },
-];
-
-function calculateFinalPrice(
-  product: Product,
-  selectedModifiers: ProductModifierOption[]
-) {
-  const modifiersTotal = selectedModifiers.reduce(
-    (sum, mod) => sum + mod.priceAdjustment,
-    0
-  );
-
-  return product.sellingPrice + modifiersTotal;
+interface Props {
+  products: Product[];
+  loading: boolean;
+  onRefresh: () => void;
+  onView: (product: Product) => void;
+  onEdit: (product: Product) => void;
+  onDelete: (productId: number) => void;
 }
 
-export default function ProductsTable() {
-  const [open, setOpen] = useState(false);
-
+export default function ProductsTable({
+  products,
+  loading,
+  onRefresh,
+  onView,
+  onEdit,
+  onDelete,
+}: Props) {
   return (
     <div className="rounded-lg border bg-background">
       <Table>
@@ -103,7 +62,7 @@ export default function ProductsTable() {
                   {product.sku}
                 </TableCell>
 
-                <TableCell>{product.category}</TableCell>
+                <TableCell>{product.categoryName}</TableCell>
 
                 <TableCell>₱{product.costPrice.toLocaleString()}</TableCell>
 
@@ -135,10 +94,20 @@ export default function ProductsTable() {
                       </Button>
                     </DropdownMenuTrigger>
 
-                    <DropdownMenuContent align="end" className="z-50">
-                      <DropdownMenuItem>View</DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
+                    <DropdownMenuContent align="end" className="z-50 bg-white">
+                      <DropdownMenuItem onClick={() => onView(product)}>
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        disabled={loading}
+                        onClick={() => onEdit(product)}
+                      >
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-red-600"
+                        onClick={() => onDelete(product.id)}
+                      >
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
