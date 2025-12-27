@@ -26,6 +26,36 @@ interface Props {
   onDelete: (productId: number) => void;
 }
 
+export const formatCurrency = (value: number) =>
+  value.toLocaleString("en-PH", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+export const getProfitMargin = (selling: number, cost: number) => {
+  if (selling === 0) return 0;
+  return ((selling - cost) / selling) * 100;
+};
+
+export const getMarginColor = (margin: number) => {
+  if (margin < 0) return "text-red-600";
+  if (margin >= 50) return "text-green-600";
+  return "text-yellow-600";
+};
+
+export const getMarginBadge = (margin: number) => {
+  if (margin < 0)
+    return { label: "Loss", className: "bg-red-100 text-red-700" };
+
+  if (margin >= 50)
+    return { label: "High", className: "bg-green-100 text-green-700" };
+
+  if (margin >= 20)
+    return { label: "Medium", className: "bg-yellow-100 text-yellow-700" };
+
+  return { label: "Low", className: "bg-gray-100 text-gray-700" };
+};
+
 export default function ProductsTable({
   products,
   loading,
@@ -42,9 +72,9 @@ export default function ProductsTable({
             <TableHead>Name</TableHead>
             <TableHead>SKU</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>Cost</TableHead>
-            <TableHead>Selling</TableHead>
-            <TableHead>Profit</TableHead>
+            <TableHead>Cost Price</TableHead>
+            <TableHead>Selling Price</TableHead>
+            <TableHead>Profit Margin</TableHead>
             <TableHead>Modifiers</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -52,7 +82,11 @@ export default function ProductsTable({
 
         <TableBody>
           {products.map((product) => {
-            const profit = product.sellingPrice - product.costPrice;
+            const margin = getProfitMargin(
+              product.sellingPrice,
+              product.costPrice
+            );
+            const badge = getMarginBadge(margin);
 
             return (
               <TableRow key={product.id}>
@@ -64,16 +98,23 @@ export default function ProductsTable({
 
                 <TableCell>{product.categoryName}</TableCell>
 
-                <TableCell>₱{product.costPrice.toLocaleString()}</TableCell>
+                <TableCell>₱{formatCurrency(product.costPrice)}</TableCell>
 
                 <TableCell className="font-semibold">
-                  ₱{product.sellingPrice.toLocaleString()}
+                  ₱{formatCurrency(product.sellingPrice)}
                 </TableCell>
 
-                <TableCell
-                  className={profit >= 0 ? "text-green-600" : "text-red-600"}
-                >
-                  ₱{profit.toLocaleString()}
+                <TableCell className={getMarginColor(margin)}>
+                  {getProfitMargin(
+                    product.sellingPrice,
+                    product.costPrice
+                  ).toFixed(2)}
+                  %
+                  <span
+                    className={`px-2 py-1 ml-5 rounded text-xs font-medium ${badge.className}`}
+                  >
+                    {badge.label}
+                  </span>
                 </TableCell>
 
                 <TableCell>
