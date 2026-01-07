@@ -1,11 +1,10 @@
+import LowStockCard from "@/components/dashboard/low-stock-card";
+
 export default function DashboardPage() {
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Welcome to POS Admin</h2>
-
-      <p className="text-muted-foreground">
-        Manage your products, orders, and users here.
-      </p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <LowStockCard />
+      {/* other small cards */}
     </div>
   );
 }

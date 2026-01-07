@@ -4,7 +4,7 @@ import {
   Tags,
   ShoppingCart,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
 export const navGroups = [
   {
@@ -19,6 +19,16 @@ export const navGroups = [
         label: "Orders",
         href: "/orders",
         icon: ShoppingCart,
+      },
+    ],
+  },
+  {
+    title: "Inventory Management",
+    items: [
+      {
+        label: "Materials",
+        href: "/materials",
+        icon: Package,
       },
     ],
   },
@@ -47,4 +57,4 @@ export const navGroups = [
       },
     ],
   },
-]
+];

@@ -1,12 +1,17 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Product } from "@/services/product_service";
+import {
+  Product,
+  ProductMaterialView,
+  ProductService,
+} from "@/services/product_service";
 
 interface Props {
   open: boolean;
@@ -15,6 +20,22 @@ interface Props {
 }
 
 export default function ProductViewModal({ open, product, onClose }: Props) {
+  const [materials, setMaterials] = useState<ProductMaterialView[]>([]);
+  const [loadingMaterials, setLoadingMaterials] = useState(false);
+
+  useEffect(() => {
+    if (!open || !product) return;
+
+    const loadMaterials = async () => {
+      setLoadingMaterials(true);
+      const data = await ProductService.getProductMaterials(product.id);
+      setMaterials(data);
+      setLoadingMaterials(false);
+    };
+
+    loadMaterials();
+  }, [open, product]);
+
   if (!product) return null;
 
   return (
@@ -70,6 +91,43 @@ export default function ProductViewModal({ open, product, onClose }: Props) {
                 </ul>
               </div>
             ))}
+          </div>
+
+          {/* MATERIALS USED */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Materials Used</h3>
+
+            {loadingMaterials ? (
+              <p className="text-muted-foreground">Loading materials...</p>
+            ) : materials.length === 0 ? (
+              <p className="text-muted-foreground">
+                No materials assigned to this product
+              </p>
+            ) : (
+              <div className="border rounded">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted border-b">
+                    <tr>
+                      <th className="px-3 py-2 text-left">Material</th>
+                      <th className="px-3 py-2 text-right">Qty / Product</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {materials.map((m) => (
+                      <tr
+                        key={m.materialId}
+                        className="border-b last:border-b-0"
+                      >
+                        <td className="px-3 py-2">{m.materialName}</td>
+                        <td className="px-3 py-2 text-right">
+                          {m.quantityUsed}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

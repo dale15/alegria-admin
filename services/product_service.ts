@@ -44,6 +44,23 @@ export type CreateProductModifierRequest = {
   }[];
 };
 
+export type ProductMaterialForm = {
+  materialId: number;
+  quantityUsed: number | "";
+};
+
+export type MaterialOption = {
+  id: number;
+  name: string;
+  unit: string;
+};
+
+export type ProductMaterialView = {
+  materialId: number;
+  materialName: string;
+  quantityUsed: number;
+};
+
 export const ProductService = {
   getAll: () => apiFetch<Product[]>("/api/Products"),
 
@@ -59,7 +76,7 @@ export const ProductService = {
     productId: number,
     modifiers: CreateProductModifierRequest
   ) =>
-    apiFetch<void>(`/api/products/${productId}/modifiers`, {
+    apiFetch<void>(`/api/Products/${productId}/modifiers`, {
       method: "POST",
       body: JSON.stringify(modifiers),
     }),
@@ -74,18 +91,27 @@ export const ProductService = {
       sellingPrice: number;
     }
   ) =>
-    apiFetch(`/api/products/${id}`, {
+    apiFetch(`/api/Products/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   delete: (productId: number) =>
-    apiFetch<void>(`/api/products/${productId}`, {
+    apiFetch<void>(`/api/Products/${productId}`, {
       method: "DELETE",
     }),
 
   deleteProductModifiers: (productId: number) =>
-    apiFetch<void>(`/api/products/${productId}/modifiers`, {
+    apiFetch<void>(`/api/Products/${productId}/modifiers`, {
       method: "DELETE",
+    }),
+
+  getProductMaterials: (productId: number) =>
+    apiFetch<ProductMaterialView[]>(`/api/Products/${productId}/materials`),
+
+  setProductMaterials: (productId: number, materials: ProductMaterialForm[]) =>
+    apiFetch<void>(`/api/Products/${productId}/materials`, {
+      method: "POST",
+      body: JSON.stringify(materials),
     }),
 };
