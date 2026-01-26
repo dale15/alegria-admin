@@ -16,8 +16,8 @@ export const navGroups = [
         icon: LayoutDashboard,
       },
       {
-        label: "Orders",
-        href: "/orders",
+        label: "Sales",
+        href: "/sales",
         icon: ShoppingCart,
       },
     ],

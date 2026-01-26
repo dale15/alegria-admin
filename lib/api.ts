@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://localhost:7178";
+const API_BASE_URL = "http://134.209.102.168:5000";
 
 export async function apiFetch<T>(
   url: string,
