@@ -139,7 +139,9 @@ export default function RevenueChart() {
 
                   return `Date: ${d.toLocaleDateString()}`;
                 }}
-                formatter={(value: number) => `₱${value.toLocaleString()}`}
+                formatter={(value?: number) =>
+                  value != null ? value.toFixed(2) : "—"
+                }
               />
 
               <Line
