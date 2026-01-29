@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { navGroups } from "@/lib/navigation";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
 
   // Find current page title
   const currentItem = navGroups
@@ -27,6 +28,11 @@ export default function Header() {
   const user = {
     name: "Admin User",
     email: "admin@example.com",
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    router.replace("/login");
   };
 
   return (
@@ -48,14 +54,18 @@ export default function Header() {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" sideOffset={8} className="w-50 z-50 bg-white">
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="w-50 z-50 bg-white"
+        >
           <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
 
           <DropdownMenuSeparator />
 
           <DropdownMenuItem>Profile</DropdownMenuItem>
 
-          <DropdownMenuItem className="text-red-600">Logout</DropdownMenuItem>
+          <DropdownMenuItem className="text-red-600" onClick={logout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

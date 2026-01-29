@@ -6,7 +6,7 @@ export default function LoginPage() {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle className="text-center text-2xl">
-          Alegria&apos;s Admin Login
+          Welcome to Alegria&apos;s admin
         </CardTitle>
       </CardHeader>
 
