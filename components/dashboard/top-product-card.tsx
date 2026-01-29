@@ -25,9 +25,19 @@ export function TopProductCard() {
 
   if (!topProducts.length) {
     return (
-      <div className="h-75 flex items-center justify-center text-muted-foreground">
-        No sales data
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🥇 Top Product
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <div className="flex items-center justify-center text-muted-foreground">
+            No sales data
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -42,19 +52,13 @@ export function TopProductCard() {
       </CardHeader>
 
       <CardContent>
-        {topProduct ? (
-          <div className="space-y-2">
-            <p className="text-lg font-semibold">{topProduct.productName}</p>
+        <div className="space-y-2">
+          <p className="text-lg font-semibold">{topProduct.productName}</p>
 
-            <p className="text-sm text-muted-foreground">
-              ₱{topProduct.totalSales.toFixed(2)} Total sales
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">No sales data</p>
-          </div>
-        )}
+          <p className="text-sm text-muted-foreground">
+            ₱{topProduct.totalSales.toFixed(2)} Total sales
+          </p>
+        </div>
       </CardContent>
     </Card>
   );
