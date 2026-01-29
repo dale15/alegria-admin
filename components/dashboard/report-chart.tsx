@@ -1,5 +1,6 @@
 "use client";
 
+import { Product, ProductService } from "@/services/product_service";
 import { ReportService, ProductSalesChart } from "@/services/report_service";
 import { useEffect, useState } from "react";
 import {
@@ -12,6 +13,14 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   product: ProductSalesChart;
@@ -19,9 +28,9 @@ interface Props {
 }
 
 function ProductSalesChartView({ product, mode = "quantity" }: Props) {
-  if (!product.sales.length) {
+  if (!product.sales || product.sales.length === 0) {
     return (
-      <div className="h-75 flex items-center justify-center text-muted">
+      <div className="h-75 flex items-center justify-center text-muted-foreground">
         No sales data
       </div>
     );
@@ -63,63 +72,143 @@ function ProductSalesChartView({ product, mode = "quantity" }: Props) {
 }
 
 export default function ProductSalesDashboard() {
-  const [data, setData] = useState<ProductSalesChart[]>([]);
+  const [data, setData] = useState<ProductSalesChart | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
   const [mode, setMode] = useState<"quantity" | "sales">("quantity");
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
     null,
   );
+  const [loading, setLoading] = useState(true);
 
+  const [fromDate, setFromDate] = useState<string | undefined>(undefined);
+  const [toDate, setToDate] = useState<string | undefined>(undefined);
+
+  const setThisMonth = () => {
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const today = new Date();
+
+    setFromDate(firstDay.toISOString().slice(0, 10));
+    setToDate(today.toISOString().slice(0, 10));
+  };
+
+  // Load products once
   useEffect(() => {
-    ReportService.getProductSalesChart()
+    ProductService.getAll()
       .then((res) => {
-        setData(res);
-        if (res.length) setSelectedProductId(res[0].productId);
+        setProducts(res);
+        if (res.length) setSelectedProductId(res[0].id);
       })
       .catch(console.error);
   }, []);
 
-  const selectedProduct = data.find((p) => p.productId === selectedProductId);
+  // Load sales whenever product changes
+  useEffect(() => {
+    if (!selectedProductId) return;
+
+    ReportService.getProductSalesChart(selectedProductId, fromDate, toDate)
+      .then(setData)
+      .catch(() =>
+        setData({
+          productId: selectedProductId,
+          productName: "",
+          totalQuantitySold: 0,
+          totalSales: 0,
+          sales: [],
+        }),
+      )
+      .finally(() => setLoading(false));
+  }, [selectedProductId, fromDate, toDate]);
 
   return (
-    <Card className="col-span-1 sm:col-span-2 lg:col-span-4">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Products</CardTitle>
+    <Card className="col-span-1 sm:col-span-2 lg:col-span-2">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center justify-between">
+        <CardTitle>Sales per Product</CardTitle>
+
+        {/* <Button size="sm" variant="outline" onClick={setThisMonth}>
+          This Month
+        </Button> */}
+
+        <div className="flex gap-2">
+          <input
+            type="date"
+            value={fromDate ?? ""}
+            onChange={(e) => setFromDate(e.target.value || undefined)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+
+          <input
+            type="date"
+            value={toDate ?? ""}
+            onChange={(e) => setToDate(e.target.value || undefined)}
+            className="border rounded px-2 py-1 text-sm"
+          />
+
+          {(fromDate || toDate) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setFromDate(undefined);
+                setToDate(undefined);
+              }}
+            >
+              Clear
+            </Button>
+          )}
+        </div>
+
+        <div className="flex gap-2">
+          {/* Product Selector */}
+          <Select
+            value={selectedProductId?.toString()}
+            onValueChange={(value) => setSelectedProductId(Number(value))}
+          >
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="Select product" />
+            </SelectTrigger>
+            <SelectContent className=" bg-white">
+              {products.map((product) => (
+                <SelectItem key={product.id} value={product.id.toString()}>
+                  {product.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Mode Toggle */}
+          <div className="flex gap-1">
+            <Button
+              variant={mode === "quantity" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setMode("quantity")}
+            >
+              Quantity
+            </Button>
+            <Button
+              variant={mode === "sales" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setMode("sales")}
+            >
+              Sales
+            </Button>
+          </div>
+        </div>
       </CardHeader>
 
       <CardContent>
-        {selectedProduct ? (
-          <ProductSalesChartView product={selectedProduct} mode={mode} />
+        {loading ? (
+          <div className="h-75 flex items-center justify-center text-muted-foreground">
+            Loading…
+          </div>
+        ) : data ? (
+          <ProductSalesChartView product={data} mode={mode} />
         ) : (
-          <div>No product selected</div>
+          <div className="h-75 flex items-center justify-center text-muted-foreground">
+            No sales data
+          </div>
         )}
       </CardContent>
     </Card>
-
-    // <div className="space-y-6">
-    //   {/* Controls */}
-    //   <div className="flex gap-4 items-center">
-    //     <select
-    //       className="border p-2 rounded"
-    //       value={selectedProductId ?? ""}
-    //       onChange={(e) => setSelectedProductId(Number(e.target.value))}
-    //     >
-    //       {data.map((product) => (
-    //         <option key={product.productId} value={product.productId}>
-    //           {product.productName}
-    //         </option>
-    //       ))}
-    //     </select>
-
-    //     <button onClick={() => setMode("quantity")}>Quantity</button>
-    //     <button onClick={() => setMode("sales")}>Sales</button>
-    //   </div>
-
-    //   {/* Chart */}
-    //   {selectedProduct ? (
-    //     <ProductSalesChartView product={selectedProduct} mode={mode} />
-    //   ) : (
-    //     <div>No product selected</div>
-    //   )}
-    // </div>
   );
 }

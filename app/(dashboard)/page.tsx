@@ -2,6 +2,8 @@ import LowStockCard from "@/components/dashboard/low-stock-card";
 import ProductSalesDashboard from "@/components/dashboard/report-chart";
 import { RevenueCard } from "@/components/dashboard/revenue-card";
 import RevenueChart from "@/components/dashboard/revenue-chart";
+import { TopProductCard } from "@/components/dashboard/top-product-card";
+import { TopProductsBarChart } from "@/components/dashboard/top-product-chart";
 
 export default function DashboardPage() {
   return (
@@ -10,9 +12,13 @@ export default function DashboardPage() {
         <RevenueCard />
       </div>
 
+      <TopProductCard />
+
       <LowStockCard />
 
       <RevenueChart />
+
+      <TopProductsBarChart />
 
       <ProductSalesDashboard />
     </div>
