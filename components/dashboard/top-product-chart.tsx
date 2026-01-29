@@ -26,9 +26,35 @@ export function TopProductsBarChart() {
 
   if (!topProducts.length) {
     return (
-      <div className="h-75 flex items-center justify-center text-muted-foreground">
-        No sales data
-      </div>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Top Products</CardTitle>
+
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={chartMode === "quantity" ? "default" : "outline"}
+              onClick={() => setMode("quantity")}
+            >
+              Quantity
+            </Button>
+
+            <Button
+              size="sm"
+              variant={chartMode === "sales" ? "default" : "outline"}
+              onClick={() => setMode("sales")}
+            >
+              Sales
+            </Button>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <div className="h-75 flex items-center justify-center text-muted-foreground">
+            No sales data
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 

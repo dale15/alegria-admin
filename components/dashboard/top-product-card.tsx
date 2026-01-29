@@ -51,7 +51,9 @@ export function TopProductCard() {
             </p>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">No sales data</p>
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">No sales data</p>
+          </div>
         )}
       </CardContent>
     </Card>
