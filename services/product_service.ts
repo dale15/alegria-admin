@@ -22,6 +22,7 @@ export type Product = {
   categoryName: string;
   costPrice: number;
   sellingPrice: number;
+  imageUrl: string;
   modifiers: ProductModifier[];
 };
 
@@ -66,15 +67,15 @@ export const ProductService = {
 
   getProductById: (id: number) => apiFetch<Product>(`/api/products/${id}`),
 
-  create: (dto: SaveProductRequest) =>
+  create: (formData: FormData) =>
     apiFetch<Product>("/api/Products/addProducts", {
       method: "POST",
-      body: JSON.stringify(dto),
+      body: formData,
     }),
 
   createProductModifiers: (
     productId: number,
-    modifiers: CreateProductModifierRequest
+    modifiers: CreateProductModifierRequest,
   ) =>
     apiFetch<void>(`/api/Products/${productId}/modifiers`, {
       method: "POST",
@@ -89,7 +90,7 @@ export const ProductService = {
       categoryId: number;
       costPrice: number;
       sellingPrice: number;
-    }
+    },
   ) =>
     apiFetch(`/api/Products/${id}`, {
       method: "PUT",

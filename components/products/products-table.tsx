@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Product } from "@/services/product_service";
+import Image from "next/image";
 
 interface Props {
   products: Product[];
@@ -69,6 +70,7 @@ export default function ProductsTable({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Product Image</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>SKU</TableHead>
             <TableHead>Category</TableHead>
@@ -84,12 +86,27 @@ export default function ProductsTable({
           {products.map((product) => {
             const margin = getProfitMargin(
               product.sellingPrice,
-              product.costPrice
+              product.costPrice,
             );
             const badge = getMarginBadge(margin);
 
             return (
               <TableRow key={product.id}>
+                <TableCell>
+                  {product.imageUrl ? (
+                    <Image
+                      src={`http://localhost:5000${product.imageUrl}`}
+                      alt={product.name}
+                      width={120}
+                      height={120}
+                      className="rounded object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <span className="text-muted-foreground">No image</span>
+                  )}
+                </TableCell>
+
                 <TableCell className="font-medium">{product.name}</TableCell>
 
                 <TableCell className="font-mono text-sm">
@@ -107,7 +124,7 @@ export default function ProductsTable({
                 <TableCell className={getMarginColor(margin)}>
                   {getProfitMargin(
                     product.sellingPrice,
-                    product.costPrice
+                    product.costPrice,
                   ).toFixed(2)}
                   %
                   <span

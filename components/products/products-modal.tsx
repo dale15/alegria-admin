@@ -58,6 +58,9 @@ export default function ProductModal({
   const [materials, setMaterials] = useState<ProductMaterialForm[]>([]);
   const [materialOptions, setMaterialOptions] = useState<MaterialOption[]>([]);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   useEffect(() => {
     if (product) {
       setProductName(product.name);
@@ -66,12 +69,17 @@ export default function ProductModal({
       setSellingPrice(product.sellingPrice);
       setModifiers(product.modifiers ?? []);
       setCategoryId(product.categoryId); // 👈 important
+
+      setImagePreview(product.imageUrl ?? null); // 👈 ADD
+      setImageFile(null);
     } else {
       setProductName("");
       setSku("");
       setCostPrice("");
       setSellingPrice("");
       setModifiers([]);
+      setImagePreview(null);
+      setImageFile(null);
     }
   }, [product, open]);
 
@@ -94,7 +102,7 @@ export default function ProductModal({
           recipe.map((r) => ({
             materialId: r.materialId,
             quantityUsed: r.quantityUsed,
-          }))
+          })),
         );
       } else {
         setMaterials([]);
@@ -120,7 +128,7 @@ export default function ProductModal({
   const updateModifier = (
     index: number,
     field: keyof ProductModifier,
-    value: any
+    value: any,
   ) => {
     const updated = [...modifiers];
     updated[index] = { ...updated[index], [field]: value };
@@ -145,7 +153,7 @@ export default function ProductModal({
     modifierIndex: number,
     optionIndex: number,
     field: keyof ProductModifierOption,
-    value: any
+    value: any,
   ) => {
     const updated = [...modifiers];
     updated[modifierIndex].options[optionIndex] = {
@@ -172,7 +180,7 @@ export default function ProductModal({
         (m) =>
           m.materialId === 0 ||
           m.quantityUsed === "" ||
-          Number(m.quantityUsed) <= 0
+          Number(m.quantityUsed) <= 0,
       );
 
       if (invalidRecipe) {
@@ -210,16 +218,21 @@ export default function ProductModal({
           materials.map((m) => ({
             materialId: m.materialId,
             quantityUsed: Number(m.quantityUsed),
-          }))
+          })),
         );
       } else {
-        const result = await ProductService.create({
-          name,
-          sku,
-          categoryId,
-          costPrice: Number(costPrice),
-          sellingPrice: Number(sellingPrice),
-        });
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("sku", sku);
+        formData.append("categoryId", categoryId.toString());
+        formData.append("costPrice", costPrice.toString());
+        formData.append("sellingPrice", sellingPrice.toString());
+
+        if (imageFile) {
+          formData.append("image", imageFile);
+        }
+
+        const result = await ProductService.create(formData);
 
         const productId = result.id;
 
@@ -229,7 +242,7 @@ export default function ProductModal({
             materials.map((m) => ({
               materialId: m.materialId,
               quantityUsed: Number(m.quantityUsed),
-            }))
+            })),
           );
         }
 
@@ -314,7 +327,7 @@ export default function ProductModal({
                 placeholder="Cost price"
                 onChange={(e) =>
                   setCostPrice(
-                    e.target.value === "" ? "" : Number(e.target.value)
+                    e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
               />
@@ -328,10 +341,34 @@ export default function ProductModal({
                 placeholder="Selling price"
                 onChange={(e) =>
                   setSellingPrice(
-                    e.target.value === "" ? "" : Number(e.target.value)
+                    e.target.value === "" ? "" : Number(e.target.value),
                   )
                 }
               />
+            </div>
+
+            <div>
+              <Label className="mb-3">Product Image</Label>
+
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  setImageFile(file);
+                  setImagePreview(URL.createObjectURL(file));
+                }}
+              />
+
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="mt-3 h-32 w-32 object-cover rounded border"
+                />
+              )}
             </div>
           </div>
 
@@ -406,7 +443,7 @@ export default function ProductModal({
                             mIndex,
                             oIndex,
                             "priceAdjustment",
-                            +e.target.value
+                            +e.target.value,
                           )
                         }
                       />
@@ -457,7 +494,7 @@ export default function ProductModal({
 
             {materials.map((row, index) => {
               const selectedMaterial = materialOptions.find(
-                (m) => m.id === row.materialId
+                (m) => m.id === row.materialId,
               );
 
               return (
@@ -470,8 +507,8 @@ export default function ProductModal({
                         const materialId = Number(val);
                         setMaterials((prev) =>
                           prev.map((r, i) =>
-                            i === index ? { ...r, materialId } : r
-                          )
+                            i === index ? { ...r, materialId } : r,
+                          ),
                         );
                       }}
                     >
@@ -499,8 +536,8 @@ export default function ProductModal({
 
                         setMaterials((prev) =>
                           prev.map((r, i) =>
-                            i === index ? { ...r, quantityUsed: value } : r
-                          )
+                            i === index ? { ...r, quantityUsed: value } : r,
+                          ),
                         );
                       }}
                     />
@@ -517,7 +554,7 @@ export default function ProductModal({
                       className="text-red-600"
                       onClick={() =>
                         setMaterials((prev) =>
-                          prev.filter((_, i) => i !== index)
+                          prev.filter((_, i) => i !== index),
                         )
                       }
                     >
