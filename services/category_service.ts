@@ -17,7 +17,7 @@ export const CategoryService = {
   getCategoryById: (id: number) => apiFetch<Category>(`/categories/${id}`),
 
   create: (dto: CreateCategoryDto) =>
-    apiFetch<Category>("/api/Categories/createCategory", {
+    apiFetch<Category>("/Categories/createCategory", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
