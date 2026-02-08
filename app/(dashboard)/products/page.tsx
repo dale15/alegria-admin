@@ -3,7 +3,7 @@
 import ProductModal from "@/components/products/products-modal";
 import ProductsTable from "@/components/products/products-table";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Product, ProductService } from "@/services/product_service";
 import ProductViewModal from "@/components/products/productsView-modal";
 import ProductsDeleteDialog from "@/components/products/productsDelete-dialog";
@@ -19,6 +19,8 @@ export default function ProductsPage() {
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadProducts = async () => {
     try {
@@ -45,6 +47,36 @@ export default function ProductsPage() {
     loadProducts();
   };
 
+  const handleExport = async () => {
+    const blob = await ProductService.export();
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "products.csv";
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleImport = async (file: File) => {
+    try {
+      const result = await ProductService.import(file);
+
+      if (result.failed > 0) {
+        console.warn("Import errors:", result.errors);
+        alert(
+          `Imported ${result.success} products\n` + `${result.failed} failed`,
+        );
+      } else {
+        alert(`Successfully imported ${result.success} products`);
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Import failed");
+    }
+  };
+
   useEffect(() => {
     loadProducts();
   }, []);
@@ -58,7 +90,30 @@ export default function ProductsPage() {
           <p className="text-muted-foreground">Manage Products</p>
         </div>
 
-        <Button onClick={() => setOpen(true)}>Add Product</Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setOpen(true)}>Add Product</Button>
+          <Button onClick={handleExport}>Export</Button>
+
+          <label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                handleImport(file);
+                e.target.value = ""; // allow re-upload same file
+              }}
+            />
+
+            <Button onClick={() => fileInputRef.current?.click()}>
+              Import
+            </Button>
+          </label>
+        </div>
       </div>
 
       <ProductsTable

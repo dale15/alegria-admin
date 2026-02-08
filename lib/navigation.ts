@@ -37,8 +37,17 @@ export const navGroups = [
     items: [
       {
         label: "Products",
-        href: "/products",
         icon: Package,
+        children: [
+          {
+            label: "All Products",
+            href: "/products",
+          },
+          {
+            label: "Discounts",
+            href: "/products/discounts",
+          },
+        ],
       },
       {
         label: "Categories",

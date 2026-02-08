@@ -26,7 +26,7 @@ export default function Header() {
 
   // Mock user (replace later with auth store)
   const user = {
-    name: "Admin User",
+    name: "Alegria Admin",
     email: "admin@example.com",
   };
 
@@ -65,7 +65,9 @@ export default function Header() {
 
           <DropdownMenuItem>Profile</DropdownMenuItem>
 
-          <DropdownMenuItem className="text-red-600" onClick={logout}>Logout</DropdownMenuItem>
+          <DropdownMenuItem className="text-red-600" onClick={logout}>
+            Logout
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

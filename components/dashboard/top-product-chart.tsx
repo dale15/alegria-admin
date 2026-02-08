@@ -18,8 +18,15 @@ export function TopProductsBarChart() {
   const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
   const [chartMode, setMode] = useState<"quantity" | "sales">("quantity");
 
+  const getTodayISO = () => {
+    const today = new Date();
+    return today.toISOString().slice(0, 10);
+  };
+
   useEffect(() => {
-    ReportService.getTopProducts(3, chartMode)
+    const today = getTodayISO();
+
+    ReportService.getTopProducts(3, chartMode, today, today)
       .then(setTopProducts)
       .catch(console.error);
   }, [chartMode]);
@@ -28,7 +35,7 @@ export function TopProductsBarChart() {
     return (
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Top Products</CardTitle>
+          <CardTitle>Top Products today</CardTitle>
 
           <div className="flex gap-2">
             <Button
@@ -67,7 +74,7 @@ export function TopProductsBarChart() {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Top Products</CardTitle>
+        <CardTitle>Top Products today</CardTitle>
 
         <div className="flex gap-2">
           <Button

@@ -83,6 +83,8 @@ export default function ProductSalesDashboard() {
   const [fromDate, setFromDate] = useState<string | undefined>(undefined);
   const [toDate, setToDate] = useState<string | undefined>(undefined);
 
+  const [dateMode, setDateMode] = useState<"today" | "custom">("today");
+
   const setThisMonth = () => {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -90,6 +92,11 @@ export default function ProductSalesDashboard() {
 
     setFromDate(firstDay.toISOString().slice(0, 10));
     setToDate(today.toISOString().slice(0, 10));
+  };
+
+  const getTodayISO = () => {
+    const today = new Date();
+    return today.toISOString().slice(0, 10);
   };
 
   // Load products once
@@ -106,7 +113,10 @@ export default function ProductSalesDashboard() {
   useEffect(() => {
     if (!selectedProductId) return;
 
-    ReportService.getProductSalesChart(selectedProductId, fromDate, toDate)
+    const from = dateMode === "today" ? getTodayISO() : fromDate;
+    const to = dateMode === "today" ? getTodayISO() : toDate;
+
+    ReportService.getProductSalesChart(selectedProductId, from, to)
       .then(setData)
       .catch(() =>
         setData({
@@ -118,7 +128,7 @@ export default function ProductSalesDashboard() {
         }),
       )
       .finally(() => setLoading(false));
-  }, [selectedProductId, fromDate, toDate]);
+  }, [selectedProductId, fromDate, toDate, dateMode]);
 
   return (
     <Card className="col-span-1 sm:col-span-2 lg:col-span-2">
@@ -129,34 +139,54 @@ export default function ProductSalesDashboard() {
           This Month
         </Button> */}
 
-        <div className="flex gap-2">
-          <input
-            type="date"
-            value={fromDate ?? ""}
-            onChange={(e) => setFromDate(e.target.value || undefined)}
-            className="border rounded px-2 py-1 text-sm"
-          />
+        <div className="flex gap-1">
+          <Button
+            size="sm"
+            variant={dateMode === "today" ? "default" : "outline"}
+            onClick={() => setDateMode("today")}
+          >
+            Today
+          </Button>
 
-          <input
-            type="date"
-            value={toDate ?? ""}
-            onChange={(e) => setToDate(e.target.value || undefined)}
-            className="border rounded px-2 py-1 text-sm"
-          />
-
-          {(fromDate || toDate) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setFromDate(undefined);
-                setToDate(undefined);
-              }}
-            >
-              Clear
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant={dateMode === "custom" ? "default" : "outline"}
+            onClick={() => setDateMode("custom")}
+          >
+            Custom
+          </Button>
         </div>
+
+        {dateMode === "custom" && (
+          <div className="flex gap-2">
+            <input
+              type="date"
+              value={fromDate ?? ""}
+              onChange={(e) => setFromDate(e.target.value || undefined)}
+              className="border rounded px-2 py-1 text-sm"
+            />
+
+            <input
+              type="date"
+              value={toDate ?? ""}
+              onChange={(e) => setToDate(e.target.value || undefined)}
+              className="border rounded px-2 py-1 text-sm"
+            />
+
+            {(fromDate || toDate) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setFromDate(undefined);
+                  setToDate(undefined);
+                }}
+              >
+                Clear
+              </Button>
+            )}
+          </div>
+        )}
 
         <div className="flex gap-2">
           {/* Product Selector */}

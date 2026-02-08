@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch, apiFetchBlob } from "@/lib/api";
 
 export type ProductModifierOption = {
   id: number;
@@ -62,6 +62,17 @@ export type ProductMaterialView = {
   quantityUsed: number;
 };
 
+export type ProductImportError = {
+  row: number;
+  message: string;
+};
+
+export type ProductImportResult = {
+  success: number;
+  failed: number;
+  errors: ProductImportError[];
+};
+
 export const ProductService = {
   getAll: () => apiFetch<Product[]>("/api/Products"),
 
@@ -115,4 +126,19 @@ export const ProductService = {
       method: "POST",
       body: JSON.stringify(materials),
     }),
+
+  export: () =>
+    apiFetchBlob(`/api/Products/export`, {
+      method: "GET",
+    }),
+
+  import: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return apiFetch<ProductImportResult>(`/api/Products/import`, {
+      method: "POST",
+      body: formData,
+    });
+  },
 };
