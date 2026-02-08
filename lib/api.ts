@@ -1,5 +1,5 @@
 // const API_BASE_URL = "http://localhost:5000";
-const API_BASE_URL = "http://134.209.102.168:5000";
+const API_BASE_URL = "/api";
 
 export async function apiFetch<T>(
   url: string,
