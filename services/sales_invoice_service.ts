@@ -27,7 +27,7 @@ export type SalesInvoice = {
 };
 
 export const SalesInvoiceService = {
-  getAll: () => apiFetch<SalesInvoice[]>("/api/sales-invoices"),
+  getAll: () => apiFetch<SalesInvoice[]>("/sales-invoices"),
 
-  getById: (id: number) => apiFetch<SalesInvoice>(`/api/sales-invoices/${id}`),
+  getById: (id: number) => apiFetch<SalesInvoice>(`/sales-invoices/${id}`),
 };

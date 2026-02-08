@@ -1,35 +1,35 @@
-import {apiFetch} from '@/lib/api';
+import { apiFetch } from "@/lib/api";
 
-export type Category =  {
-    id: number;
-    name: string;
-    description: string;
-}
+export type Category = {
+  id: number;
+  name: string;
+  description: string;
+};
 
 export type CreateCategoryDto = {
-    name: string;
-    description: string;
-}
+  name: string;
+  description: string;
+};
 
 export const CategoryService = {
-    getAll: () => apiFetch<Category[]>('/api/Categories'),
+  getAll: () => apiFetch<Category[]>("/Categories"),
 
-    getCategoryById: (id: number) => apiFetch<Category>(`/api/categories/${id}`),
+  getCategoryById: (id: number) => apiFetch<Category>(`/categories/${id}`),
 
-    create: (dto: CreateCategoryDto) =>
+  create: (dto: CreateCategoryDto) =>
     apiFetch<Category>("/api/Categories/createCategory", {
       method: "POST",
       body: JSON.stringify(dto),
     }),
 
   update: (id: number, dto: CreateCategoryDto) =>
-    apiFetch(`/api/Categories/updateCategory/${id}`, {
+    apiFetch(`/Categories/updateCategory/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   remove: (id: number) =>
-    apiFetch(`/api/Categories/${id}`, {
+    apiFetch(`/Categories/${id}`, {
       method: "DELETE",
     }),
-}
+};

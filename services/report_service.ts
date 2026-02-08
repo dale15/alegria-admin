@@ -33,7 +33,7 @@ export const ReportService = {
     if (to) params.append("to", to);
 
     return apiFetch<ProductSalesChart>(
-      `/api/reports/product-sales?productId=${productId}&${params.toString()}`,
+      `/reports/product-sales?productId=${productId}&${params.toString()}`,
     );
   },
 
@@ -51,7 +51,7 @@ export const ReportService = {
     if (to) params.append("to", to);
 
     return apiFetch<TopProduct[]>(
-      `/api/reports/top-products?limit=${limit}&orderBy=${orderBy}&${params.toString()}`,
+      `/reports/top-products?limit=${limit}&orderBy=${orderBy}&${params.toString()}`,
     );
   },
 };

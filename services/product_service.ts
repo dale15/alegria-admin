@@ -74,12 +74,12 @@ export type ProductImportResult = {
 };
 
 export const ProductService = {
-  getAll: () => apiFetch<Product[]>("/api/Products"),
+  getAll: () => apiFetch<Product[]>("/Products"),
 
-  getProductById: (id: number) => apiFetch<Product>(`/api/products/${id}`),
+  getProductById: (id: number) => apiFetch<Product>(`/products/${id}`),
 
   create: (formData: FormData) =>
-    apiFetch<Product>("/api/Products/addProducts", {
+    apiFetch<Product>("/Products/addProducts", {
       method: "POST",
       body: formData,
     }),
@@ -88,7 +88,7 @@ export const ProductService = {
     productId: number,
     modifiers: CreateProductModifierRequest,
   ) =>
-    apiFetch<void>(`/api/Products/${productId}/modifiers`, {
+    apiFetch<void>(`/Products/${productId}/modifiers`, {
       method: "POST",
       body: JSON.stringify(modifiers),
     }),
@@ -103,32 +103,32 @@ export const ProductService = {
       sellingPrice: number;
     },
   ) =>
-    apiFetch(`/api/Products/${id}`, {
+    apiFetch(`/Products/${id}`, {
       method: "PUT",
       body: JSON.stringify(dto),
     }),
 
   delete: (productId: number) =>
-    apiFetch<void>(`/api/Products/${productId}`, {
+    apiFetch<void>(`/Products/${productId}`, {
       method: "DELETE",
     }),
 
   deleteProductModifiers: (productId: number) =>
-    apiFetch<void>(`/api/Products/${productId}/modifiers`, {
+    apiFetch<void>(`/Products/${productId}/modifiers`, {
       method: "DELETE",
     }),
 
   getProductMaterials: (productId: number) =>
-    apiFetch<ProductMaterialView[]>(`/api/Products/${productId}/materials`),
+    apiFetch<ProductMaterialView[]>(`/Products/${productId}/materials`),
 
   setProductMaterials: (productId: number, materials: ProductMaterialForm[]) =>
-    apiFetch<void>(`/api/Products/${productId}/materials`, {
+    apiFetch<void>(`/Products/${productId}/materials`, {
       method: "POST",
       body: JSON.stringify(materials),
     }),
 
   export: () =>
-    apiFetchBlob(`/api/Products/export`, {
+    apiFetchBlob(`/Products/export`, {
       method: "GET",
     }),
 
@@ -136,7 +136,7 @@ export const ProductService = {
     const formData = new FormData();
     formData.append("file", file);
 
-    return apiFetch<ProductImportResult>(`/api/Products/import`, {
+    return apiFetch<ProductImportResult>(`/Products/import`, {
       method: "POST",
       body: formData,
     });

@@ -25,27 +25,28 @@ export type MaterialStockLog = {
 };
 
 export const MaterialService = {
-  getAll: () => apiFetch<Material[]>("/api/Materials"),
+  getAll: () => apiFetch<Material[]>("/Materials"),
 
   addMaterial: (data: CreateMaterialDto) =>
-    apiFetch<Material>("/api/Materials", {
+    apiFetch<Material>("/Materials", {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
   updateMaterial: (id: number, data: Partial<CreateMaterialDto>) =>
-    apiFetch<Material>(`/api/Materials/${id}`, {
+    apiFetch<Material>(`/Materials/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     }),
-  
-  getLowStockMaterials: () => apiFetch<Material[]>("/api/Materials/low-stock"),
+
+  getLowStockMaterials: () => apiFetch<Material[]>("/Materials/low-stock"),
 
   adjustStock: (id: number, data: { quantityChange: number; reason: string }) =>
-    apiFetch<Material>(`/api/Materials/${id}/adjust`, {
+    apiFetch<Material>(`/Materials/${id}/adjust`, {
       method: "POST",
       body: JSON.stringify(data),
     }),
 
-  getStockLogs: (id: number) => apiFetch<MaterialStockLog[]>(`/api/Materials/${id}/stock-history`),
+  getStockLogs: (id: number) =>
+    apiFetch<MaterialStockLog[]>(`/Materials/${id}/stock-history`),
 };

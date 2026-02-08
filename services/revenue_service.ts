@@ -23,6 +23,6 @@ export const RevenueService = {
     if (from) params.append("from", from);
     if (to) params.append("to", to);
 
-    return apiFetch<RevenueSummary>(`/api/Revenues?${params.toString()}`);
+    return apiFetch<RevenueSummary>(`/Revenues?${params.toString()}`);
   },
 };

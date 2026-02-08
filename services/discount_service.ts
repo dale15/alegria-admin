@@ -16,14 +16,14 @@ export type DiscountPayload = {
 };
 
 export const DiscountService = {
-  getAllDiscounts: () => apiFetch<Discount[]>("/api/Discounts"),
+  getAllDiscounts: () => apiFetch<Discount[]>("/Discounts"),
 
-  getDiscountById: (id: number) => apiFetch<Discount>(`/api/Discounts/${id}`),
+  getDiscountById: (id: number) => apiFetch<Discount>(`/Discounts/${id}`),
 
-  getActiveDiscounts: () => apiFetch<Discount>("/api/Discounts/active"),
+  getActiveDiscounts: () => apiFetch<Discount>("/Discounts/active"),
 
   createDiscount: (payload: DiscountPayload) =>
-    apiFetch<Discount>("/api/Discounts/", {
+    apiFetch<Discount>("/Discounts/", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -32,7 +32,7 @@ export const DiscountService = {
     }),
 
   updateDiscount: (id: number, payload: DiscountPayload) =>
-    apiFetch<void>(`/api/Discounts/update-discount/${id}`, {
+    apiFetch<void>(`/Discounts/update-discount/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export const DiscountService = {
     }),
 
   deleteDiscount: (id: number) =>
-    apiFetch<Discount>(`/api/Discounts/delete-discount/${id}`, {
+    apiFetch<Discount>(`/Discounts/delete-discount/${id}`, {
       method: "DELETE",
     }),
 };
