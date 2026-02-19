@@ -15,6 +15,11 @@ export type SaleItem = {
   modifiers: SaleModifier[];
 };
 
+export type SalePayment = {
+  paymentType: string;
+  amount: number;
+};
+
 export type SalesInvoice = {
   id: number;
   invoiceNumber: string;
@@ -24,6 +29,7 @@ export type SalesInvoice = {
   discount: number;
   totalAmount: number;
   items: SaleItem[];
+  payments: SalePayment[];
 };
 
 export const SalesInvoiceService = {

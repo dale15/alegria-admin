@@ -27,6 +27,14 @@ export default function SalesInvoiceModal({ id, onClose }: Props) {
 
   if (!id) return null;
 
+  const paymentMethod = invoice?.payments?.[0]?.paymentType ?? "Unknown";
+
+  const paymentColors: Record<string, string> = {
+    Cash: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300",
+    GCash: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+    Card: "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300",
+  };
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0">
@@ -46,8 +54,10 @@ export default function SalesInvoiceModal({ id, onClose }: Props) {
                   </p>
                 </div>
 
-                <Badge className="text-sm bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
-                  PAID
+                <Badge
+                  className={`text-sm ${paymentColors[paymentMethod] ?? "bg-gray-100 text-gray-700"}`}
+                >
+                  PAID in {paymentMethod}
                 </Badge>
               </div>
             </DialogHeader>

@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SalesInvoice } from "@/services/sales_invoice_service";
 import { useState } from "react";
+import { Badge } from "../ui/badge";
 
 interface Props {
   salesInvoice: SalesInvoice[];
@@ -32,6 +33,7 @@ export default function SalesInvoiceTable({
             <TableHead>Invoice Number</TableHead>
             <TableHead>Invoice Date</TableHead>
             <TableHead>Total Amount</TableHead>
+            <TableHead>Payment Method</TableHead>
             <TableHead className="text-left">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -67,8 +69,10 @@ export default function SalesInvoiceTable({
                   {new Date(invoice.invoiceDate).toLocaleDateString()}
                 </TableCell>
                 <TableCell>₱ {invoice.totalAmount.toFixed(2)}</TableCell>
+                <TableCell>
+                  <Badge>{invoice.payments[0]?.paymentType ?? "-"}</Badge>
+                </TableCell>
                 <TableCell className="text-left">
-                  {" "}
                   <Button
                     className="mr-5"
                     size="sm"
