@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch, apiFetchBlob } from "@/lib/api";
 
 export type Material = {
   id: number;
@@ -22,6 +22,17 @@ export type MaterialStockLog = {
   reason: string;
   referenceType: string;
   createdAt: string;
+};
+
+export type MaterialImportError = {
+  row: number;
+  message: string;
+};
+
+export type MaterialImportResult = {
+  success: number;
+  failed: number;
+  errors: MaterialImportError[];
 };
 
 export const MaterialService = {
@@ -49,4 +60,19 @@ export const MaterialService = {
 
   getStockLogs: (id: number) =>
     apiFetch<MaterialStockLog[]>(`/Materials/${id}/stock-history`),
+
+  exportMaterials: () =>
+    apiFetchBlob(`/Materials/export`, {
+      method: "GET",
+    }),
+
+  importMaterial: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return apiFetch<MaterialImportResult>(`/Materials/import`, {
+      method: "POST",
+      body: formData,
+    });
+  },
 };

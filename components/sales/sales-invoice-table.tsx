@@ -56,7 +56,7 @@ export default function SalesInvoiceTable({
                 colSpan={6}
                 className="text-center text-muted-foreground"
               >
-                No material found.
+                No Sales Invoice available at the moment.
               </TableCell>
             </TableRow>
           )}

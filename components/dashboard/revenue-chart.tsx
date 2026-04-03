@@ -87,7 +87,7 @@ export default function RevenueChart() {
               variant={range === r ? "default" : "outline"}
               onClick={() => setRange(r)}
             >
-              {r.toUpperCase()}
+              {r.charAt(0).toUpperCase() + r.slice(1)}
             </Button>
           ))}
         </div>

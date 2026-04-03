@@ -71,6 +71,8 @@ export default function ProductsPage() {
       } else {
         alert(`Successfully imported ${result.success} products`);
       }
+
+      await loadProducts();
     } catch (e) {
       console.error(e);
       alert("Import failed");
